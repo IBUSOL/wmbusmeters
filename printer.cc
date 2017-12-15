@@ -35,8 +35,8 @@ void Printer::print(Meter *meter)
     if (meterfiles_) {
 	char filename[128];
 	memset(filename, 0, sizeof(filename));
-	snprintf(filename, 127, "/tmp/%s", meter->name().c_str());
-	output = fopen(filename, "w");
+	snprintf(filename, 127, "/home/pi/files/%s", meter->name().c_str());
+	output = fopen(filename, "ab");
     }
 
     if (robot_) printMeterJSON(output, meter);
@@ -49,13 +49,16 @@ void Printer::print(Meter *meter)
 
 void Printer::printMeterHumanReadable(FILE *output, Meter *meter)
 {
-    fprintf(output, "%s\t%s\t% 3.3f m3\t%s\t% 3.3f m3\t%s\n",
+    fprintf(output , "%s;%s;%d;%d;%d;%s;%s;%s\n",
 	    meter->name().c_str(),
 	    meter->id().c_str(),
-	    meter->totalWaterConsumption(),
-	    meter->datetimeOfUpdateHumanReadable().c_str(),
-	    meter->targetWaterConsumption(), 
-	    meter->statusHumanReadable().c_str());	
+		meter->totalPower(),
+		meter->totalVolume(),
+		meter->currentPower(),
+        meter->datetimeOfUpdateHumanReadable().c_str(),
+ 		meter->typeMessage().c_str(),
+ 		meter->decryptedHex().c_str()
+		);	
 }
 
 #define Q(x,y) "\""#x"\":"#y","
@@ -67,23 +70,15 @@ void Printer::printMeterJSON(FILE *output, Meter *meter)
     fprintf(output, "{"
 	    QS(name,%s)
 	    QS(id,%s)
-	    Q(total_m3,%.3f)
-	    Q(target_m3,%.3f)
-	    QS(current_status,%s)
-	    QS(time_dry,%s)
-	    QS(time_reversed,%s)
-	    QS(time_leaking,%s)
-	    QS(time_bursting,%s)
-	    QSE(timestamp,%s)
+	    Q(total_power_kwh,%d)
+	   	Q(totalVolume_m3,%d)
+		Q(currentPower_W,%d)
+		QS(Timestamp,%s)
 	    "}\n",
 	    meter->name().c_str(),
 	    meter->id().c_str(),
-	    meter->totalWaterConsumption(),
-	    meter->targetWaterConsumption(), 
-	    meter->status().c_str(), // DRY REVERSED LEAK BURST
-	    meter->timeDry().c_str(),
-	    meter->timeReversed().c_str(),
-	    meter->timeLeaking().c_str(),
-	    meter->timeBursting().c_str(),
-	    meter->datetimeOfUpdateRobot().c_str());
+	    meter->totalPower(),
+	    meter->totalVolume(),
+        meter->currentPower(),
+        meter->datetimeOfUpdateHumanReadable().c_str());
 }

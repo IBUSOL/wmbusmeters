@@ -66,10 +66,17 @@ int main(int argc, char **argv)
     if (cmdline->meters.size() > 0) {
         for (auto &m : cmdline->meters) {
             verbose("Configuring meter: \"%s\" \"%s\" \"%s\"\n", m.name, m.id, m.key);
-            m.meter = createMultical21(wmbus, m.name, m.id, m.key);
+            m.meter = createMultical302(wmbus, m.name, m.id, m.key);
             m.meter->onUpdate(calll(output,print,Meter*));
-	    m.meter->onUpdate([cmdline,manager](Meter*meter) { oneshotCheck(cmdline,manager,meter); });
-        }
+	    m.meter->onUpdate([cmdline,manager](Meter*meter) 
+		{
+			
+		//run wmbusmeters with cronjob (hourly) and stop after 220 updates(+/- 58 min 40 sec ) updates (for multical 302)
+			if (meter->numUpdates() > 220)    
+	    		{manager->stop();}
+			oneshotCheck(cmdline,manager,meter); });
+
+	}
     } else {
         printf("No meters configured. Printing id:s of all telegrams heard! \n");
         printf("To configure a meter, add a triplet to the command line: name id key\n");
@@ -90,6 +97,7 @@ void oneshotCheck(CommandLine *cmdline, SerialCommunicationManager *manager, Met
     for (auto &m : cmdline->meters) {
 	if (m.meter->numUpdates() == 0) return;
     }
-    // All meters have received at least one update! Stop!
-    manager->stop();
+    // All meters have received at least 10 updates! Stop!
+	if (meter->numUpdates() > 10)  
+	{manager->stop();}
 }

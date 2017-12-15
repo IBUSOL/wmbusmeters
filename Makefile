@@ -37,7 +37,7 @@ METERS_OBJS:=\
 	$(BUILD)/cmdline.o \
 	$(BUILD)/main.o \
 	$(BUILD)/meters.o \
-	$(BUILD)/meter_multical21.o \
+	$(BUILD)/meter_multical302.o \
 	$(BUILD)/printer.o \
 	$(BUILD)/serial.o \
 	$(BUILD)/util.o \

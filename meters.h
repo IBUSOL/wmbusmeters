@@ -35,27 +35,17 @@ struct Meter {
     virtual string id() = 0;
     virtual string name() = 0;
 
-    virtual float totalWaterConsumption() = 0;
-    virtual bool  hasTotalWaterConsumption() = 0;
-    virtual float targetWaterConsumption() = 0;
-    virtual bool  hasTargetWaterConsumption() = 0;
-    virtual float maxFlow() = 0;
-    virtual bool  hasMaxFlow() = 0;    
-
-    virtual string statusHumanReadable() = 0;
-    virtual string status() = 0;
-    virtual string timeDry() = 0;
-    virtual string timeReversed() = 0;
-    virtual string timeLeaking() = 0;
-    virtual string timeBursting() = 0;
-    
+	virtual int totalPower() =0;
+	virtual int totalVolume() =0;
+	virtual int currentPower() =0;
+	virtual string typeMessage()=0;	
+	virtual string decryptedHex()=0;
     virtual string datetimeOfUpdateHumanReadable() = 0;
-    virtual string datetimeOfUpdateRobot() = 0;
 
     virtual void onUpdate(function<void(Meter*)> cb) = 0;
     virtual int numUpdates() = 0;
 };
 
-Meter *createMultical21(WMBus *bus, const char *name, const char *id, const char *key);
+Meter *createMultical302(WMBus *bus, const char *name, const char *id, const char *key);
 
 #endif
